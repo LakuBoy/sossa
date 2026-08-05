@@ -25,8 +25,10 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 
+// CORS - allow all origins so the deployed frontend (any Vercel URL)
+// and local dev servers can access the API
 app.use(cors({
-  origin: ["http://localhost:5000", "http://localhost:5173", "http://localhost:5174"],
+  origin: true,
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
