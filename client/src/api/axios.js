@@ -1,13 +1,12 @@
 import axios from "axios";
 
+const rawBase = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const baseURL = rawBase.replace(/\/+$/, "").replace(/\/api$/, "") + "/api";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL,
 });
 
-// Add token to requests if it exists
-// NOTE: Content-Type is NOT set globally so axios can auto-set
-// multipart/form-data with proper boundary for FormData requests,
-// and application/json for regular JSON payloads.
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("adminToken");
