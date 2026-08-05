@@ -103,7 +103,14 @@ const ensureAdminExists = async () => {
 ensureAdminExists();
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(` http://localhost:${PORT}`);
-});
+
+// Only start the server when running locally (not on Vercel serverless)
+if (process.env.VERCEL !== "1") {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(` http://localhost:${PORT}`);
+  });
+}
+
+// Export for Vercel serverless
+export default app;
