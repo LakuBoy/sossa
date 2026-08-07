@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Mail, Phone, Calendar, Ruler, Users, BookOpen, MessageSquare, ArrowRight, Upload, Image } from "lucide-react";
+import { User, Mail, Phone, Calendar, Ruler, Users, BookOpen, MessageSquare, ArrowRight, Image } from "lucide-react";
 import DialogBox from "../components/DialogBox";
+import api from "../api/axios"; // 1. Imported Axios instance
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -48,14 +49,10 @@ export default function Register() {
         submitData.append("photo", photo);
       }
 
-      const response = await fetch("http://localhost:5000/api/registrations", {
-        method: "POST",
-        body: submitData,
-      });
+      // 2. Updated: Replaced localhost fetch with api.post
+      const response = await api.post("/registrations", submitData);
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setSubmittedName(formData.fullName);
         setIsDialogOpen(true);
         setFormData({
@@ -74,11 +71,11 @@ export default function Register() {
           fileInputRef.current.value = "";
         }
       } else {
-        alert(`Failed to register: ${data.message}`);
+        alert(`Failed to register: ${response.data?.message || "Unknown error"}`);
       }
     } catch (error) {
-      console.error("Network error:", error);
-      alert("Something went wrong. Please try again.");
+      console.error("Registration error:", error);
+      alert(error.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }

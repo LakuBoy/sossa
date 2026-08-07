@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from "lucide-react";
+import api from "../api/axios"; // 1. Import your configured axios instance
 
 export default function Contact() {
   const [formData, setFormData] = useState({ fullName: "", email: "", message: "" });
@@ -19,23 +20,18 @@ export default function Contact() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      // 2. Use api.post instead of fetch with localhost
+      const response = await api.post("/messages", formData);
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
+      if (response.data && response.data.success) {
         setSubmitSuccess(true);
         setFormData({ fullName: "", email: "", message: "" });
         setTimeout(() => setSubmitSuccess(false), 5000);
       } else {
-        setError(data.message || "Failed to send message.");
+        setError(response.data.message || "Failed to send message.");
       }
     } catch (error) {
-      setError("Network error. Please try again.");
+      setError(error.response?.data?.message || "Network error. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

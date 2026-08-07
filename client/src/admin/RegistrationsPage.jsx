@@ -14,10 +14,10 @@ export default function RegistrationsPage() {
   const fetchRegistrations = async () => {
     try {
       const res = await api.get("/registrations");
-      setRegistrations(res.data);
+      setRegistrations(Array.isArray(res.data) ? res.data : res.data.registrations || []);
     } catch (err) {
       console.error("Failed to fetch registrations:", err);
-      alert("Failed to load registrations");
+      alert(err.response?.data?.message || "Failed to load registrations");
     } finally {
       setLoading(false);
     }
@@ -31,7 +31,7 @@ export default function RegistrationsPage() {
       );
     } catch (err) {
       console.error("Failed to update status:", err);
-      alert("Failed to update status");
+      alert(err.response?.data?.message || "Failed to update status");
     }
   };
 
@@ -42,7 +42,7 @@ export default function RegistrationsPage() {
       setRegistrations((prev) => prev.filter((r) => r._id !== id));
     } catch (err) {
       console.error("Failed to delete:", err);
-      alert("Failed to delete registration");
+      alert(err.response?.data?.message || "Failed to delete registration");
     }
   };
 
@@ -121,8 +121,8 @@ export default function RegistrationsPage() {
                   <td className="p-4 border-b text-gray-600">{reg.position}</td>
                   <td className="p-4 border-b text-gray-600">{reg.program}</td>
                   <td className="p-4 border-b">
-                    <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${getStatusColor(reg.status)}`}>
-                      {reg.status}
+                    <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${getStatusColor(reg.status || "pending")}`}>
+                      {reg.status || "pending"}
                     </span>
                   </td>
                   <td className="p-4 border-b">
